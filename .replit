@@ -1,0 +1,56 @@
+modules = ["nodejs-20", "postgresql-16"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "DB Push"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "DB Seed"
+
+[[workflows.workflow]]
+name = "Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node backend/server.js"
+waitForPort = 8000
+
+[[workflows.workflow]]
+name = "DB Push"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node scripts/db-push.js"
+
+[[workflows.workflow]]
+name = "DB Seed"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node scripts/db-seed.js"
+
+[deployment]
+run = ["sh", "-c", "node backend/server.js"]
+
+[[ports]]
+localPort = 8000
+externalPort = 80

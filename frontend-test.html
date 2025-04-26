@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAPAS Kashmir Education App - API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .chat-container {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #dcf8c6;
+            margin-left: auto;
+            text-align: right;
+        }
+        .bot-message {
+            background-color: #f1f0f0;
+        }
+        .input-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .language-select {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .loading {
+            text-align: center;
+            color: #777;
+            font-style: italic;
+        }
+        .content-tab {
+            display: none;
+        }
+        .content-tab.active {
+            display: block;
+        }
+        .voice-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .record-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #f44336;
+            color: white;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .record-button:hover {
+            transform: scale(1.05);
+        }
+        .record-button.recording {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        .voice-status {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .audio-playback {
+            margin-top: 20px;
+            width: 100%;
+        }
+        .transcription-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .transcription-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .transcription-text {
+            font-style: italic;
+        }
+        .response-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 10px;
+            border: 1px solid #c8e6c9;
+        }
+        .response-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PAPAS Kashmir Education App</h1>
+        <h2>AI-Powered Education Information Assistant</h2>
+        
+        <div class="language-select">
+            <label for="language">Select Language:</label>
+            <select id="language">
+                <option value="english">English</option>
+                <option value="urdu">اردو (Urdu)</option>
+            </select>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab active" id="chatTab">Text Chat</div>
+            <div class="tab" id="voiceTab">Voice Assistant</div>
+        </div>
+        
+        <div class="content-tab active" id="chatContent">
+            <div class="chat-container" id="chatContainer">
+                <div class="message bot-message">
+                    Welcome to PAPAS Kashmir Education Assistant! I can help you with information about educational regulations, school fees, and more. What would you like to know?
+                </div>
+            </div>
+            
+            <div class="input-container">
+                <input type="text" id="messageInput" placeholder="Type your question here..." />
+                <button id="sendButton">Send</button>
+            </div>
+        </div>
+        
+        <div class="content-tab" id="voiceContent">
+            <div class="voice-container">
+                <div class="record-button" id="recordButton">Record</div>
+                <div class="voice-status" id="voiceStatus">Press to record your question</div>
+                
+                <div class="transcription-container" id="transcriptionContainer" style="display: none;">
+                    <div class="transcription-title">Your Question:</div>
+                    <div class="transcription-text" id="transcriptionText"></div>
+                </div>
+                
+                <div class="response-container" id="responseContainer" style="display: none;">
+                    <div class="response-title">AI Response:</div>
+                    <div class="response-text" id="responseText"></div>
+                </div>
+                
+                <audio id="audioPlayback" class="audio-playback" controls style="display: none;"></audio>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // UI Elements
+        const chatContainer = document.getElementById('chatContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const languageSelect = document.getElementById('language');
+        const chatTab = document.getElementById('chatTab');
+        const voiceTab = document.getElementById('voiceTab');
+        const chatContent = document.getElementById('chatContent');
+        const voiceContent = document.getElementById('voiceContent');
+        const recordButton = document.getElementById('recordButton');
+        const voiceStatus = document.getElementById('voiceStatus');
+        const transcriptionContainer = document.getElementById('transcriptionContainer');
+        const transcriptionText = document.getElementById('transcriptionText');
+        const responseContainer = document.getElementById('responseContainer');
+        const responseText = document.getElementById('responseText');
+        const audioPlayback = document.getElementById('audioPlayback');
+        
+        // Chat history array to send to API
+        let chatHistory = [];
+        
+        // Tab switching
+        chatTab.addEventListener('click', () => {
+            chatTab.classList.add('active');
+            voiceTab.classList.remove('active');
+            chatContent.classList.add('active');
+            voiceContent.classList.remove('active');
+        });
+        
+        voiceTab.addEventListener('click', () => {
+            voiceTab.classList.add('active');
+            chatTab.classList.remove('active');
+            voiceContent.classList.add('active');
+            chatContent.classList.remove('active');
+        });
+        
+        // Function to add messages to the chat container
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+            messageDiv.textContent = message;
+            chatContainer.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Add to chat history
+            chatHistory.push({
+                text: message,
+                isUser: isUser
+            });
+        }
+        
+        // Function to show loading indicator
+        function showLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.classList.add('loading');
+            loadingDiv.id = 'loading';
+            loadingDiv.textContent = 'Assistant is typing...';
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Function to remove loading indicator
+        function hideLoading() {
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+        
+        // Function to send message to API
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage(message, true);
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Show loading indicator
+            showLoading();
+            
+            try {
+                // Send request to API
+                const response = await fetch('http://localhost:8000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        language: languageSelect.value,
+                        chatHistory: chatHistory.slice(0, -1) // Exclude the message we just added
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading indicator
+                hideLoading();
+                
+                if (data.success) {
+                    // Add bot response to chat
+                    addMessage(data.message);
+                } else {
+                    // Add error message
+                    addMessage('Sorry, I encountered an error: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                // Hide loading indicator
+                hideLoading();
+                
+                // Add error message
+                addMessage('Sorry, I encountered a network error. Please try again later.');
+                console.error('Error:', error);
+            }
+        }
+        
+        // Voice recording variables
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        
+        // Function to start recording
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.addEventListener('dataavailable', event => {
+                    audioChunks.push(event.data);
+                });
+                
+                mediaRecorder.addEventListener('stop', () => {
+                    processAudioRecording();
+                });
+                
+                mediaRecorder.start();
+                isRecording = true;
+                
+                // Update UI
+                recordButton.textContent = 'Stop';
+                recordButton.classList.add('recording');
+                voiceStatus.textContent = 'Recording... Click to stop';
+                
+                // Reset previous results
+                transcriptionContainer.style.display = 'none';
+                responseContainer.style.display = 'none';
+                audioPlayback.style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                voiceStatus.textContent = 'Error: Could not access microphone. Please check permissions.';
+            }
+        }
+        
+        // Function to stop recording
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                // Update UI
+                recordButton.textContent = 'Record';
+                recordButton.classList.remove('recording');
+                voiceStatus.textContent = 'Processing audio...';
+                
+                // Stop all tracks
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+        }
+        
+        // Function to process the recorded audio
+        async function processAudioRecording() {
+            try {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                
+                // Create audio URL for playback
+                const audioUrl = URL.createObjectURL(audioBlob);
+                audioPlayback.src = audioUrl;
+                audioPlayback.style.display = 'block';
+                
+                // Convert blob to base64
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                
+                reader.onloadend = async function() {
+                    const base64Audio = reader.result;
+                    await sendVoiceToAPI(base64Audio);
+                }
+            } catch (error) {
+                console.error('Error processing audio:', error);
+                voiceStatus.textContent = 'Error processing audio. Please try again.';
+            }
+        }
+        
+        // Function to send voice data to API
+        async function sendVoiceToAPI(audioData) {
+            try {
+                voiceStatus.textContent = 'Sending to AI for processing...';
+                
+                const response = await fetch('http://localhost:8000/api/voice', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        audio: audioData,
+                        language: languageSelect.value
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Display transcription and response
+                    transcriptionText.textContent = data.transcription;
+                    transcriptionContainer.style.display = 'block';
+                    
+                    responseText.textContent = data.message;
+                    responseContainer.style.display = 'block';
+                    
+                    voiceStatus.textContent = 'Complete! You can record again.';
+                } else {
+                    voiceStatus.textContent = 'Error: ' + (data.message || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Error sending voice data:', error);
+                voiceStatus.textContent = 'Network error. Please check your connection and try again.';
+            }
+        }
+        
+        // Event listeners for text chat
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Event listener for voice recording
+        recordButton.addEventListener('click', function() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        });
+    </script>
+</body>
+</html>
